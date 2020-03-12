@@ -96,7 +96,11 @@ namespace open3mod
 
             if (x != 0)
             {
-                _view *= Matrix4.CreateFromAxisAngle(_up, (float)(x * RotationSpeed * Math.PI / 180.0));
+                // Free Orbit
+                //_view *= Matrix4.CreateFromAxisAngle(_up, (float)(x * RotationSpeed * Math.PI / 180.0));
+                
+                // Constrained Orbit: Keep Model Upright when Rotating
+                _view *= Matrix4.CreateFromAxisAngle(Matrix4.Invert(_view).Column1.Xyz, (float)(x * RotationSpeed * Math.PI / 180.0));
             }
 
             if (y != 0)
