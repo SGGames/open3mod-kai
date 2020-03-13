@@ -187,19 +187,17 @@ namespace open3mod
 
             // Create a shallow copy of the original scene that replaces all the texture paths with their
             // corresponding output paths, and omits animations if requested.
-            var sourceScene = new Assimp.Scene
-                              {
-                                  Textures = scene.Raw.Textures,
-                                  SceneFlags = scene.Raw.SceneFlags,
-                                  RootNode = scene.Raw.RootNode,
-                                  Meshes = scene.Raw.Meshes,
-                                  Lights = scene.Raw.Lights,
-                                  Cameras = scene.Raw.Cameras
-                              };
+            var sourceScene = new Assimp.Scene{};
+            sourceScene.Textures.AddRange(scene.Raw.Textures);
+            sourceScene.SceneFlags = scene.Raw.SceneFlags;
+            sourceScene.RootNode = scene.Raw.RootNode;
+            sourceScene.Meshes.AddRange(scene.Raw.Meshes);
+            sourceScene.Lights.AddRange(scene.Raw.Lights);
+            sourceScene.Cameras.AddRange(scene.Raw.Cameras);
 
             if (includeAnimations)
             {
-                sourceScene.Animations = scene.Raw.Animations;
+                sourceScene.Animations.AddRange(scene.Raw.Animations);
             }
 
             var uniques = new HashSet<string>();

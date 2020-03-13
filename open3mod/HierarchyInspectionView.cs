@@ -1125,14 +1125,14 @@ namespace open3mod
                     parent = node.Parent;
                     parentChildIndex = node.Index;
 
-                    sceneNode.Remove();
+                    sceneNode.Parent.Children.Remove(sceneNode);
                     node.Remove();
                 },
                 () =>
                 {
                     node = _treeNodesBySceneNode[sceneNode];
                     oldSceneParent.Children.Insert(oldSceneParentChildPosition, sceneNode);
-                    sceneNode.Parent = oldSceneParent;
+                    //sceneNode.Parent = oldSceneParent;
                     parent.Nodes.Insert(parentChildIndex, node);
                 },
                 FinishUpdatingTree);
@@ -1153,12 +1153,12 @@ namespace open3mod
                 () =>
                 {
                     _scene.Raw.RootNode = sceneNode;
-                    sceneNode.Parent = null;
+                    //sceneNode.Parent = null;
                 },
                 () =>
                 {
                     _scene.Raw.RootNode = oldRootNode;
-                    sceneNode.Parent = oldParent;
+                    //sceneNode.Parent = oldParent;
                 },
                 RebuildTree);
         }
@@ -1191,14 +1191,15 @@ namespace open3mod
                     node = _treeNodesBySceneNodeMeshPair[nodeMeshPair];
                     parent = node.Parent;
                     parentChildIndex = node.Index;
-
-                    nodeMeshPair.Key.MeshIndices = newList;
+                    nodeMeshPair.Key.MeshIndices.Clear();
+                    nodeMeshPair.Key.MeshIndices.AddRange(newList);
                     node.Remove();
                 },
                 () =>
                 {
                     node = _treeNodesBySceneNodeMeshPair[nodeMeshPair];
-                    nodeMeshPair.Key.MeshIndices = oldList;
+                    nodeMeshPair.Key.MeshIndices.Clear();
+                    nodeMeshPair.Key.MeshIndices.AddRange(oldList);
                     parent.Nodes.Insert(parentChildIndex, node);
                 },
                 FinishUpdatingTree);
