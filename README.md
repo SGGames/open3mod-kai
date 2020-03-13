@@ -1,5 +1,9 @@
-# Open 3D Model Viewer 
+# Open 3D Model Viewer Kai (Open 3D Model Viewer 改)
+A Kai (Modified) version of  Open 3D Model Viewer.
 
+All credit to original author - acgessler.
+
+---
 A general-purpose 3D model viewer. Based on 
 [Open Asset Import Library](https://github.com/assimp/assimp), it supports 
 reading about __fourty 3D file formats__, including __FBX, DXF, Collada, Obj, X, PLY, 3DS, LWO, LWS, STL__ 
