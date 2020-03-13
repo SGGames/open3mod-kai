@@ -28,6 +28,8 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>app_icon.ico</ApplicationIcon>
@@ -73,6 +75,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AssimpNet, Version=5.0.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
+      <HintPath>..\libs\AssimpNet.5.0.0-beta1\lib\net40\AssimpNet.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK">
       <HintPath>..\libs\OpenTK\OpenTK.dll</HintPath>
     </Reference>
@@ -406,12 +411,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>GraphicsSettings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\libs\assimp-net\AssimpNet\AssimpNet.csproj">
-      <Project>{3415ff29-c0be-44fc-ad34-94796118e690}</Project>
-      <Name>AssimpNet</Name>
-    </ProjectReference>
     <ProjectReference Include="..\libs\devil-net\DevILNet\DevILNet.csproj">
       <Project>{578fd0d9-41aa-4fa4-8d9b-4021978fa48d}</Project>
       <Name>DevILNet</Name>
@@ -501,6 +503,13 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\libs\AssimpNet.5.0.0-beta1\build\AssimpNet.targets" Condition="Exists('..\libs\AssimpNet.5.0.0-beta1\build\AssimpNet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\libs\AssimpNet.5.0.0-beta1\build\AssimpNet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\libs\AssimpNet.5.0.0-beta1\build\AssimpNet.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
