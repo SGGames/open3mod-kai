@@ -1,4 +1,4 @@
-# Open 3D Model Viewer Kai (Open 3D Model Viewer 改)
+# Open 3D Model Viewer Kai(改)
 A Kai (Modified) version of  Open 3D Model Viewer.
 
 All credit to original author - acgessler.
