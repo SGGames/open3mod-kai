@@ -56,7 +56,10 @@ namespace open3mod
         {
             // set fixed-function lighting parameters
             GL.ShadeModel(ShadingModel.Smooth);
-            GL.LightModel(LightModelParameter.LightModelAmbient, new[] { 0.3f, 0.3f, 0.3f, 1 });
+            //GL.LightModel(LightModelParameter.LightModelAmbient, new[] { 0.3f, 0.3f, 0.3f, 1 });
+            float ambient = 0.0f + (GraphicsSettings.Default.OutputBrightness / 100.0f) * 0.6f;
+            //float ambient = 0.5f;
+            GL.LightModel(LightModelParameter.LightModelAmbient, new[] { ambient, ambient, ambient, 1 });
             GL.Enable(EnableCap.Lighting);
             GL.Enable(EnableCap.Light0);
 
@@ -67,11 +70,12 @@ namespace open3mod
             GL.Light(LightName.Light0, LightParameter.Position, new float[] { dir.X, dir.Y, dir.Z, 0 });
 
             // light color
-            var col = new Vector3(1, 1, 1);
-            col *= (0.25f + 1.5f * GraphicsSettings.Default.OutputBrightness / 100.0f) * 1.5f;
-
-            GL.Light(LightName.Light0, LightParameter.Diffuse, new float[] { col.X, col.Y, col.Z, 1 });
-            GL.Light(LightName.Light0, LightParameter.Specular, new float[] { col.X, col.Y, col.Z, 1 });
+            var Diffuse = 0.2f +  (GraphicsSettings.Default.OutputBrightness / 100.0f)*0.5f;
+            var Specular =  0.5f + (GraphicsSettings.Default.OutputBrightness / 100.0f) * 0.5f;
+            Diffuse = 1.0f; Specular = 0.2f;
+            GL.Light(LightName.Light0, LightParameter.Diffuse, new float[] { Diffuse, Diffuse, Diffuse, 1 });
+            GL.Light(LightName.Light0, LightParameter.Specular, new float[] { Specular, Specular, Specular, 1 });
+            //GL.Light(LightName.Light0, LightParameter.Specular, new float[] { Specular, 0, 0, 1 });
         }
 
         public override void EndScene(Renderer renderer)
@@ -148,6 +152,7 @@ namespace open3mod
             }
 
             var color = new Color4(.8f, .8f, .8f, 1.0f);
+            Color4 c;
             if (mat.HasColorDiffuse)
             {
                 color = AssimpToOpenTk.FromColor(mat.ColorDiffuse);
@@ -173,36 +178,55 @@ namespace open3mod
                     GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, color);
                 }
 
-                color = new Color4(0, 0, 0, 1.0f);
+
+
+                color = new Color4(1, 1, 1, 1.0f);
                 if (mat.HasColorSpecular)
                 {
-                    color = AssimpToOpenTk.FromColor(mat.ColorSpecular);              
+                    c = AssimpToOpenTk.FromColor(mat.ColorSpecular);
+                    if (c.R+c.G+c.B > 0.0f)
+                    {
+                        color = c;
+                    }
                 }
                 GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, color);
 
-                color = new Color4(.2f, .2f, .2f, 1.0f);
+                // Assimp alaways returns HasColorAmbient with {0,0,0,1} when source file has no setting.
+                // This makes ambient light becomes all black
+                // (The same issue of diffuse color has been fixed above)
+                // workaround: Shift color range from 1~0 to 1~(min ambient)
+                float minAmb = 0.8f;
+                color = new Color4(minAmb, minAmb, minAmb, 1.0f);
+                //color = new Color4(.2f, .2f, .2f, 1.0f);
                 if (mat.HasColorAmbient)
                 {
                     color = AssimpToOpenTk.FromColor(mat.ColorAmbient);
+                    float shiftC(float oc) => oc * (1.0f - minAmb) + minAmb;
+                    color.R = shiftC(color.R);
+                    color.G = shiftC(color.G);
+                    color.B = shiftC(color.B);
                 }
                 GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, color);
 
                 color = new Color4(0, 0, 0, 1.0f);
                 if (mat.HasColorEmissive)
                 {
-                    color = AssimpToOpenTk.FromColor(mat.ColorEmissive);
+                    c = AssimpToOpenTk.FromColor(mat.ColorEmissive);
+                    if (c.R + c.G + c.B > 0.0f)
+                    {
+                        color = c;
+                    }
                 }
                 GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, color);
 
                 float shininess = 1;
                 float strength = 1;
-                if (mat.HasShininess)
+                if (mat.HasShininess && mat.Shininess > 0.0f)
                 {
                     shininess = mat.Shininess;
-
                 }
                 // todo: I don't even remember how shininess strength was supposed to be handled in assimp
-                if (mat.HasShininessStrength)
+                if (mat.HasShininessStrength && mat.ShininessStrength > 0.0f)
                 {
                     strength = mat.ShininessStrength;
                 }
